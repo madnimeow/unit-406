@@ -1,0 +1,15 @@
+streamlit
+flask
+requests
+python-dotenv
+
+firebase-admin
+google-cloud-firestore
+google-cloud-pubsub
+google-generativeai
+google-api-python-client
+
+opencv-python-headless
+imagehash
+yt-dlp
+Pillow
