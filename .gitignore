@@ -1,0 +1,12 @@
+# Firebase secrets
+serviceAccountKey.json
+
+# Dumps / sensitive files
+*.txt
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Env files
+.env
