@@ -3,13 +3,15 @@ from firebase_admin import credentials, firestore
 import os
 import streamlit as st
 
-def init_db():
-    def get_secret(key):
-        try:
-            return st.secrets["firebase"][key]
-        except Exception:
-            return os.getenv(key)
+def get_secret(key):
+    # Priority 1: Streamlit secrets
+    if "firebase" in st.secrets and key in st.secrets["firebase"]:
+        return st.secrets["firebase"][key]
     
+    # Priority 2: environment variables (local dev)
+    return os.getenv(key)
+
+def init_db():
     firebase_project_id = get_secret("FIREBASE_PROJECT_ID")
     firebase_private_key_id = get_secret("FIREBASE_PRIVATE_KEY_ID")
     firebase_private_key = get_secret("FIREBASE_PRIVATE_KEY")
@@ -22,7 +24,7 @@ def init_db():
     firebase_universe_domain = get_secret("FIREBASE_UNIVERSE_DOMAIN") or "googleapis.com"
     
     print("Using Streamlit secrets:", "firebase" in st.secrets)
-    print("Project ID loaded:", bool(firebase_project_id))
+    print("Project ID loaded:", firebase_project_id is not None)
     
     if not all([firebase_project_id, firebase_private_key_id, firebase_private_key, firebase_client_email, firebase_client_id]):
         raise ValueError(
@@ -46,10 +48,11 @@ def init_db():
         "universe_domain": firebase_universe_domain,
     }
     
+    if not firebase_admin._apps:
         cred = credentials.Certificate(service_account_info)
         firebase_admin.initialize_app(cred)
         print("✅ Connected to Google Firebase")
-
+    
     return firestore.client()
 
 # Global database instance
